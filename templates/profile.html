@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="text-center text-primary">My Profile</h2>
+    
+        <div class="card shadow p-4">
+            <h4>Name : {{ user.name }}</h4>
+            <h5>Email : {{ user.email }}</h5>
+        </div>
+
+        <a href="/edit-profile" class="btn btn-warning mt-3">Edit Profile</a>
+    
+</div>
+
+{% endblock %}
