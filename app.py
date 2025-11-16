@@ -2,13 +2,19 @@ from flask import Flask,render_template,request,redirect,flash,url_for,session
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+
 import uuid
+import os
+
 
 
 
 
 app = Flask(__name__)
 app.secret_key = "mysecretkey"
+
+app.config["UPLOAD_FOLDER"] = "static/uploads"
 
 app.config["SQLALCHEMY_DATABASE_URI"]='sqlite:///data.db'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]=False
@@ -247,6 +253,18 @@ def edit_profile():
     if request.method == "POST":
         user.name = request.form["name"]
         user.email = request.form["email"]
+
+        if "profile_image" in request.files:
+            file = request.files["profile_image"]
+            if file.filename != "":
+                filename = secure_filename(file.filename)
+                upload_folder = app.config["UPLOAD_FOLDER"]
+                if not os.path.exists(upload_folder):
+                    os.makedirs(upload_folder)
+                
+                filepath = os.path.join(upload_folder,filename)
+                file.save(filepath)
+                user.profile_images = filename
 
         db.session.commit()
         flash("Profile Updated Successfully!", "success")
